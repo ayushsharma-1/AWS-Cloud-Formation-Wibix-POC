@@ -1,0 +1,1 @@
+https://console.aws.amazon.com/cloudformation/home?region=ap-south-1#/stacks/new?stackName=WibixPOCStackNew&templateURL=https://wibix-poc.s3.ap-south-1.amazonaws.com/wibix-poc.yaml

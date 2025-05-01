@@ -1,0 +1,92 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation template for Wibix Consulting POC in ap-south-1 with Amazon Linux 2023 AMI
+
+Parameters:
+  InstanceType:
+    Type: String
+    Default: t2.micro
+    AllowedValues: [t2.micro]
+    Description: EC2 instance type (free-tier eligible)
+  KeyName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Default: Test
+    Description: Name of the EC2 KeyPair (must exist in ap-south-1)
+  S3BucketPrefix:
+    Type: String
+    Default: wibix-poc
+    Description: Prefix for S3 bucket name (lowercase, no spaces)
+  S3BucketSuffix:
+    Type: String
+    Default: stack
+    Description: Suffix for S3 bucket name (lowercase, no spaces)
+
+Resources:
+  # S3 Bucket
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub '${S3BucketPrefix}-${S3BucketSuffix}-${AWS::Region}'
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+    DeletionPolicy: Retain
+
+  # IAM Role for EC2 with read-only access
+  EC2IAMRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: ReadOnlyAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ec2:Describe*
+                  - s3:Get*
+                  - s3:List*
+                  - cloudformation:Describe*
+                  - cloudformation:List*
+                Resource: '*'
+
+  # IAM Instance Profile for EC2
+  EC2InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - !Ref EC2IAMRole
+
+  # EC2 Instance
+  EC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: !Ref InstanceType
+      ImageId: ami-0f1dcc636b69a6438 # Amazon Linux 2023 AMI (ap-south-1, 64-bit x86)
+      KeyName: !Ref KeyName
+      IamInstanceProfile: !Ref EC2InstanceProfile
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: true
+          DeviceIndex: '0'
+      Tags:
+        - Key: Name
+          Value: Wibix-POC-Instance
+
+Outputs:
+  S3BucketName:
+    Description: Name of the created S3 bucket
+    Value: !Ref S3Bucket
+  EC2InstanceId:
+    Description: ID of the created EC2 instance
+    Value: !Ref EC2Instance
+  StackArn:
+    Description: ARN of the CloudFormation stack
+    Value: !Ref AWS::StackId
