@@ -139,4 +139,4 @@ Follow these steps to deploy the CloudFormation stack and prepare the EC2 instan
 
 **Author**: [Ayush Sharma]  
 **Date**: May 1, 2025  
-**GitHub**: https://github.com/<your-username>/wibix-poc
+**GitHub**: https://github.com/ayushsharma-1/AWS-Cloud-Formation-Wibix-POC
