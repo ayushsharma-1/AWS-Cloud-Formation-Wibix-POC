@@ -106,8 +106,8 @@ Follow these steps to deploy the CloudFormation stack and prepare the EC2 instan
    - On the EC2 instance:
      ```
      python3 fetch_inventory.py --stack-arn arn:aws:cloudformation:ap-south-1:471112992897:stack/WibixPOCStackNew/<uuid>
-    ```
-    ```
+      ```
+     ```
      python3 fetch_inventory.py --stack-arn arn:aws:cloudformation:ap-south-1:471112992897:stack/WibixPOCStack/6630c700-262a-11f0-9aca-0a393fa90801
      ```
    - Replace `<uuid>` with the Stack ARN from the new stack (`WibixPOCStackNew`).
